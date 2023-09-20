@@ -1,0 +1,9 @@
+<library path="pytroller">
+  <class name="pytroller/Pytroller"
+        type="pytroller::Pytroller" 
+        base_class_type="controller_interface::ControllerInterface">
+  <description>
+    Python controller for ros2_control
+  </description>
+  </class>
+</library>
