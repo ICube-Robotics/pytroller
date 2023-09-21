@@ -1,4 +1,4 @@
-// Copyright 2021 Stogl Robotics Consulting UG (haftungsbescrhänkt)
+// Copyright 2023 ICube-Robotics
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,8 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// author: Maciej Bednarczyk
 
-#include "pytroller/pytroller.hpp"
+#include "@(pytroller_name)/@(pytroller_name).hpp"
 
 #include <algorithm>
 #include <memory>
@@ -27,18 +29,18 @@
 #include "rclcpp/qos.hpp"
 
 #include <Python.h>
-#include "pytroller_logic.h"
+#include "@(pytroller_name)_logic.h"
 
-namespace pytroller
+namespace @(pytroller_name)
 {
-Pytroller::Pytroller()
+@(pytroller_class)::@(pytroller_class)()
 : controller_interface::ControllerInterface(),
   rt_command_ptr_(nullptr),
   joints_command_subscriber_(nullptr)
 {
 }
 
-controller_interface::CallbackReturn Pytroller::on_init()
+controller_interface::CallbackReturn @(pytroller_class)::on_init()
 {
   try
   {
@@ -50,18 +52,18 @@ controller_interface::CallbackReturn Pytroller::on_init()
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  if (PyImport_AppendInittab("pytroller_logic", PyInit_pytroller_logic) == -1) {
+  if (PyImport_AppendInittab("@(pytroller_name)_logic", PyInit_@(pytroller_name)_logic) == -1) {
     fprintf(stderr, "Error: could not extend in-built modules table\n");
     return controller_interface::CallbackReturn::ERROR;
   }
 
   Py_Initialize();
-  PyImport_ImportModule("pytroller_logic");
+  PyImport_ImportModule("@(pytroller_name)_logic");
 
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::CallbackReturn Pytroller::on_configure(
+controller_interface::CallbackReturn @(pytroller_class)::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   auto ret = this->read_parameters();
@@ -90,7 +92,7 @@ controller_interface::CallbackReturn Pytroller::on_configure(
 }
 
 controller_interface::InterfaceConfiguration
-Pytroller::command_interface_configuration() const
+@(pytroller_class)::command_interface_configuration() const
 {
   controller_interface::InterfaceConfiguration command_interfaces_config;
   command_interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
@@ -99,14 +101,14 @@ Pytroller::command_interface_configuration() const
   return command_interfaces_config;
 }
 
-controller_interface::InterfaceConfiguration Pytroller::state_interface_configuration()
+controller_interface::InterfaceConfiguration @(pytroller_class)::state_interface_configuration()
   const
 {
   return controller_interface::InterfaceConfiguration{
     controller_interface::interface_configuration_type::ALL};
 }
 
-controller_interface::CallbackReturn Pytroller::on_activate(
+controller_interface::CallbackReturn @(pytroller_class)::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>>
@@ -129,7 +131,7 @@ controller_interface::CallbackReturn Pytroller::on_activate(
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::CallbackReturn Pytroller::on_deactivate(
+controller_interface::CallbackReturn @(pytroller_class)::on_deactivate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   // reset command buffer
@@ -137,7 +139,7 @@ controller_interface::CallbackReturn Pytroller::on_deactivate(
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::return_type Pytroller::update(
+controller_interface::return_type @(pytroller_class)::update(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   auto joint_commands = rt_command_ptr_.readFromRT();
@@ -168,10 +170,10 @@ controller_interface::return_type Pytroller::update(
     states_[state_interfaces_[index].get_name()] = state_interfaces_[index].get_value();
   }
 
-  if (pytroller_logic(states_, references_, commands_)) {
+  if (@(pytroller_name)_logic(states_, references_, commands_)) {
     RCLCPP_ERROR_THROTTLE(
       get_node()->get_logger(), *(get_node()->get_clock()), 1000,
-      "pytroller logic failed.");
+      "@(pytroller_name) logic failed.");
     return controller_interface::return_type::ERROR;
   }
 
@@ -183,12 +185,12 @@ controller_interface::return_type Pytroller::update(
   return controller_interface::return_type::OK;
 }
 
-void Pytroller::declare_parameters()
+void @(pytroller_class)::declare_parameters()
 {
   param_listener_ = std::make_shared<ParamListener>(get_node());
 }
 
-controller_interface::CallbackReturn Pytroller::read_parameters()
+controller_interface::CallbackReturn @(pytroller_class)::read_parameters()
 {
   if (!param_listener_)
   {
@@ -217,9 +219,9 @@ controller_interface::CallbackReturn Pytroller::read_parameters()
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-}  // namespace pytroller
+}  // namespace @(pytroller_name)
 
 #include "pluginlib/class_list_macros.hpp"
 
 PLUGINLIB_EXPORT_CLASS(
-  pytroller::Pytroller, controller_interface::ControllerInterface)
+  @(pytroller_name)::@(pytroller_class), controller_interface::ControllerInterface)

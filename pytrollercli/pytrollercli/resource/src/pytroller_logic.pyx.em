@@ -5,12 +5,12 @@ from libcpp.string cimport string
 
 ##########################################################################################################################################################
 
-include "pytroller_logic_impl.py"
+include "@(pytroller_name)_logic_impl.py"
 
 ##########################################################################################################################################################
 
-cdef public int pytroller_logic(unordered_map[string, double] states, unordered_map[string, double] references, unordered_map[string, double] & commands):
-  from pytroller_logic import pytroller_logic_impl
+cdef public int @(pytroller_name)_logic(unordered_map[string, double] states, unordered_map[string, double] references, unordered_map[string, double] & commands):
+  from @(pytroller_name)_logic import pytroller_logic_impl
   try:
     commands = pytroller_logic_impl(states, references, commands)
   except Exception as error:

@@ -19,38 +19,38 @@
  * library cannot have, but the consuming code must have inorder to link.
  */
 
-#ifndef PYTROLLER__VISIBILITY_CONTROL_H_
-#define PYTROLLER__VISIBILITY_CONTROL_H_
+#ifndef  @(pytroller_name.upper())__VISIBILITY_CONTROL_H_
+#define  @(pytroller_name.upper())__VISIBILITY_CONTROL_H_
 
 // This logic was borrowed (then namespaced) from the examples on the gcc wiki:
 //     https://gcc.gnu.org/wiki/Visibility
 
 #if defined _WIN32 || defined __CYGWIN__
 #ifdef __GNUC__
-#define PYTROLLER_EXPORT __attribute__((dllexport))
-#define PYTROLLER_IMPORT __attribute__((dllimport))
+#define  @(pytroller_name.upper())_EXPORT __attribute__((dllexport))
+#define  @(pytroller_name.upper())_IMPORT __attribute__((dllimport))
 #else
-#define PYTROLLER_EXPORT __declspec(dllexport)
-#define PYTROLLER_IMPORT __declspec(dllimport)
+#define  @(pytroller_name.upper())_EXPORT __declspec(dllexport)
+#define  @(pytroller_name.upper())_IMPORT __declspec(dllimport)
 #endif
-#ifdef PYTROLLER_BUILDING_DLL
-#define PYTROLLER_PUBLIC PYTROLLER_EXPORT
+#ifdef  @(pytroller_name.upper())_BUILDING_DLL
+#define  @(pytroller_name.upper())_PUBLIC  @(pytroller_name.upper())_EXPORT
 #else
-#define PYTROLLER_PUBLIC PYTROLLER_IMPORT
+#define  @(pytroller_name.upper())_PUBLIC  @(pytroller_name.upper())_IMPORT
 #endif
-#define PYTROLLER_PUBLIC_TYPE PYTROLLER_PUBLIC
-#define PYTROLLER_LOCAL
+#define  @(pytroller_name.upper())_PUBLIC_TYPE  @(pytroller_name.upper())_PUBLIC
+#define  @(pytroller_name.upper())_LOCAL
 #else
-#define PYTROLLER_EXPORT __attribute__((visibility("default")))
-#define PYTROLLER_IMPORT
+#define  @(pytroller_name.upper())_EXPORT __attribute__((visibility("default")))
+#define  @(pytroller_name.upper())_IMPORT
 #if __GNUC__ >= 4
-#define PYTROLLER_PUBLIC __attribute__((visibility("default")))
-#define PYTROLLER_LOCAL __attribute__((visibility("hidden")))
+#define  @(pytroller_name.upper())_PUBLIC __attribute__((visibility("default")))
+#define  @(pytroller_name.upper())_LOCAL __attribute__((visibility("hidden")))
 #else
-#define PYTROLLER_PUBLIC
-#define PYTROLLER_LOCAL
+#define  @(pytroller_name.upper())_PUBLIC
+#define  @(pytroller_name.upper())_LOCAL
 #endif
-#define PYTROLLER_PUBLIC_TYPE
+#define  @(pytroller_name.upper())_PUBLIC_TYPE
 #endif
 
-#endif  // PYTROLLER__VISIBILITY_CONTROL_H_
+#endif  //  @(pytroller_name.upper())__VISIBILITY_CONTROL_H_

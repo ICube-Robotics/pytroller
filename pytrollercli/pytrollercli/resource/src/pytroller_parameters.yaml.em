@@ -1,4 +1,4 @@
-pytroller:
+@(pytroller_name):
   joints: {
     type: string_array,
     default_value: [],

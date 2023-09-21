@@ -20,14 +20,14 @@
 #include "rclcpp/executors/single_threaded_executor.hpp"
 #include "ros2_control_test_assets/descriptions.hpp"
 
-TEST(TestLoadPytroller, load_plugin)
+TEST(TestLoad@(pytroller_class), load_plugin)
 {
   pluginlib::ClassLoader<controller_interface::ControllerInterface> plugin_loader{
     "controller_interface", "controller_interface::ControllerInterface"};
-  ASSERT_NO_THROW(plugin_loader.createSharedInstance("pytroller/Pytroller"));
+  ASSERT_NO_THROW(plugin_loader.createSharedInstance("@(pytroller_name)/@(pytroller_class)"));
 }
 
-TEST(TestLoadPytroller, load_controller)
+TEST(TestLoad@(pytroller_class), load_controller)
 {
   std::shared_ptr<rclcpp::Executor> executor =
     std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
@@ -39,8 +39,8 @@ TEST(TestLoadPytroller, load_controller)
 
   ASSERT_NE(
     cm.load_controller(
-      "load_pytroller",
-      "pytroller/Pytroller"
+      "load_@(pytroller_name)",
+      "@(pytroller_name)/@(pytroller_class)"
     ),
     nullptr
   );

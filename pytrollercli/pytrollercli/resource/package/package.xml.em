@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>pytroller</name>
+  <name>@pytroller_name</name>
   <version>0.0.1</version>
   <description>Python controller for ros2_control.</description>
-  <maintainer email="mcbed.robotics@gmail.com">Maciej Bednarczyk</maintainer>
+  <maintainer email="@maintainer_email">@maintainer_name</maintainer>
 
   <license>Apache License 2.0</license>
 

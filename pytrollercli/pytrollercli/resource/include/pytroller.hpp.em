@@ -14,8 +14,8 @@
 //
 // author: Maciej Bednarczyk
 
-#ifndef PYTROLLER__FORWARD_CONTROLLERS_BASE_HPP_
-#define PYTROLLER__FORWARD_CONTROLLERS_BASE_HPP_
+#ifndef @(pytroller_name.upper())__@(pytroller_name.upper())_HPP_
+#define @(pytroller_name.upper())__@(pytroller_name.upper())_HPP_
 
 #include <memory>
 #include <string>
@@ -23,55 +23,55 @@
 #include <unordered_map>
 
 #include "controller_interface/controller_interface.hpp"
-#include "pytroller/visibility_control.h"
+#include "@(pytroller_name)/visibility_control.h"
 #include "rclcpp/subscription.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "realtime_tools/realtime_buffer.h"
 #include "std_msgs/msg/float64_multi_array.hpp"
-#include "pytroller_parameters.hpp"
+#include "@(pytroller_name)_parameters.hpp"
 
-namespace pytroller
+namespace @(pytroller_name)
 {
-using CmdType = std_msgs::msg::Float64MultiArray;
+using CmdType = std_msgs::msg::Float64MultiArray;;
 
 /**
  * \brief Python controller for a set of joints and interfaces.
  *
  * Subscribes to:
- * - \b commands (std_msgs::msg::Float64MultiArray) : The commands to apply.
+ * - \b commands : The commands to apply.
  */
-class Pytroller : public controller_interface::ControllerInterface
+class @(pytroller_class) : public controller_interface::ControllerInterface
 {
 public:
-  PYTROLLER_PUBLIC
-  Pytroller();
+  @(pytroller_name.upper())_PUBLIC
+  @(pytroller_class)();
 
-  PYTROLLER_PUBLIC
-  ~Pytroller() = default;
+  @(pytroller_name.upper())_PUBLIC
+  ~@(pytroller_class)() = default;
 
-  PYTROLLER_PUBLIC
+  @(pytroller_name.upper())_PUBLIC
   controller_interface::InterfaceConfiguration command_interface_configuration() const override;
 
-  PYTROLLER_PUBLIC
+  @(pytroller_name.upper())_PUBLIC
   controller_interface::InterfaceConfiguration state_interface_configuration() const override;
 
-  PYTROLLER_PUBLIC
+  @(pytroller_name.upper())_PUBLIC
   controller_interface::CallbackReturn on_init() override;
 
-  PYTROLLER_PUBLIC
+  @(pytroller_name.upper())_PUBLIC
   controller_interface::CallbackReturn on_configure(
     const rclcpp_lifecycle::State & previous_state) override;
 
-  PYTROLLER_PUBLIC
+  @(pytroller_name.upper())_PUBLIC
   controller_interface::CallbackReturn on_activate(
     const rclcpp_lifecycle::State & previous_state) override;
 
-  PYTROLLER_PUBLIC
+  @(pytroller_name.upper())_PUBLIC
   controller_interface::CallbackReturn on_deactivate(
     const rclcpp_lifecycle::State & previous_state) override;
 
-  PYTROLLER_PUBLIC
+  @(pytroller_name.upper())_PUBLIC
   controller_interface::return_type update(
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
@@ -95,6 +95,6 @@ protected:
   rclcpp::Subscription<CmdType>::SharedPtr joints_command_subscriber_;
 };
 
-}  // namespace pytroller
+}  // namespace @(pytroller_name)
 
-#endif  // PYTROLLER__FORWARD_CONTROLLERS_BASE_HPP_
+#endif  // @(pytroller_name.upper())__FORWARD_CONTROLLERS_BASE_HPP_
