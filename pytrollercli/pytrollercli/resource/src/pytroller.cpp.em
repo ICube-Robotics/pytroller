@@ -36,7 +36,7 @@ namespace @(pytroller_name)
 @(pytroller_class)::@(pytroller_class)()
 : controller_interface::ControllerInterface(),
   rt_command_ptr_(nullptr),
-  joints_command_subscriber_(nullptr)
+  command_subscriber_(nullptr)
 {
 }
 
@@ -75,7 +75,6 @@ controller_interface::CallbackReturn @(pytroller_class)::on_configure(
   for (auto index = 0ul; index < command_interfaces_.size(); ++index)
   {
     commands_.insert({command_interfaces_[index].get_name(), command_interfaces_[index].get_value()});
-    references_.insert({command_interfaces_[index].get_name(), std::numeric_limits<double>::quiet_NaN()});
   }
 
   for (auto index = 0ul; index < state_interfaces_.size(); ++index)
@@ -83,9 +82,9 @@ controller_interface::CallbackReturn @(pytroller_class)::on_configure(
     states_.insert({state_interfaces_[index].get_name(), state_interfaces_[index].get_value()});
   }
 
-  joints_command_subscriber_ = get_node()->create_subscription<CmdType>(
-    "~/commands", rclcpp::SystemDefaultsQoS(),
-    [this](const CmdType::SharedPtr msg) { rt_command_ptr_.writeFromNonRT(msg); });
+  command_subscriber_ = get_node()->create_generic_subscription(
+    params_.command_topic_name, params_.command_topic_type, rclcpp::SystemDefaultsQoS(),
+    [this](std::shared_ptr<rclcpp::SerializedMessage> msg) { rt_command_ptr_.writeFromNonRT(msg); });
 
   RCLCPP_INFO(get_node()->get_logger(), "configure successful");
   return controller_interface::CallbackReturn::SUCCESS;
@@ -125,7 +124,7 @@ controller_interface::CallbackReturn @(pytroller_class)::on_activate(
   }
 
   // reset command buffer if a command came through callback when controller was inactive
-  rt_command_ptr_ = realtime_tools::RealtimeBuffer<std::shared_ptr<CmdType>>(nullptr);
+  rt_command_ptr_ = realtime_tools::RealtimeBuffer<std::shared_ptr<rclcpp::SerializedMessage>>(nullptr);
 
   RCLCPP_INFO(get_node()->get_logger(), "activate successful");
   return controller_interface::CallbackReturn::SUCCESS;
@@ -135,34 +134,24 @@ controller_interface::CallbackReturn @(pytroller_class)::on_deactivate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   // reset command buffer
-  rt_command_ptr_ = realtime_tools::RealtimeBuffer<std::shared_ptr<CmdType>>(nullptr);
+  rt_command_ptr_ = realtime_tools::RealtimeBuffer<std::shared_ptr<rclcpp::SerializedMessage>>(nullptr);
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::return_type @(pytroller_class)::update(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
-  auto joint_commands = rt_command_ptr_.readFromRT();
+  auto msg = rt_command_ptr_.readFromRT();
 
   // no command received yet
-  if (!joint_commands || !(*joint_commands))
+  if (!msg || !(*msg))
   {
     return controller_interface::return_type::OK;
-  }
-
-  if ((*joint_commands)->data.size() != command_interfaces_.size())
-  {
-    RCLCPP_ERROR_THROTTLE(
-      get_node()->get_logger(), *(get_node()->get_clock()), 1000,
-      "command size (%zu) does not match number of interfaces (%zu)",
-      (*joint_commands)->data.size(), command_interfaces_.size());
-    return controller_interface::return_type::ERROR;
   }
 
   for (auto index = 0ul; index < command_interfaces_.size(); ++index)
   {
     commands_[command_interfaces_[index].get_name()] = std::numeric_limits<double>::quiet_NaN();
-    references_[command_interfaces_[index].get_name()] = (*joint_commands)->data[index];
   }
 
   for (auto index = 0ul; index < state_interfaces_.size(); ++index)
@@ -170,7 +159,10 @@ controller_interface::return_type @(pytroller_class)::update(
     states_[state_interfaces_[index].get_name()] = state_interfaces_[index].get_value();
   }
 
-  if (@(pytroller_name)_logic(states_, references_, commands_)) {
+  std::vector<int> message((*msg)->get_rcl_serialized_message().buffer,
+    (*msg)->get_rcl_serialized_message().buffer +  (*msg)->size());
+
+  if (@(pytroller_name)_logic(states_, commands_, message)) {
     RCLCPP_ERROR_THROTTLE(
       get_node()->get_logger(), *(get_node()->get_clock()), 1000,
       "@(pytroller_name) logic failed.");
