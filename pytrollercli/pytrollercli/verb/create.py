@@ -25,10 +25,7 @@ class CreateVerb(VerbExtension):
 
   def add_arguments(self, parser, cli_name):
     parser.add_argument(
-      'pytroller_logic',
-      help='Pytroller logic .py file')
-    parser.add_argument(
-      '--pytroller-name',
+      'pytroller_name',
       default='pytroller',
       help='The pytroller name')
     parser.add_argument(
@@ -40,5 +37,4 @@ class CreateVerb(VerbExtension):
     create_pytroller(
       args.pytroller_name,
       args.destination_directory,
-      args.pytroller_logic
     )

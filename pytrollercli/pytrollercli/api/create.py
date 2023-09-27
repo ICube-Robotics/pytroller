@@ -97,6 +97,7 @@ def create_package_environment(pytroller_name, destination_directory):
   include_directory = None
   print('creating source and include folder')
   source_directory = _create_folder('src', package_directory)
+  source_directory = _create_folder('script', package_directory)
   source_directory = _create_folder('test', package_directory)
   include_directory = _create_folder(pytroller_name, package_directory + os.sep + 'include')
 
@@ -128,8 +129,8 @@ def populate_ament_cmake(package_name, package_directory):
     plugin_config)
 
   
-def populate_logic(package_name, source_directory, logic_script):
-  os.popen('cp ' + logic_script + ' ' + source_directory + os.sep + package_name +'_logic_impl.py') 
+def populate_logic(package_name, source_directory):
+  
   cmakelists_config = {
     'pytroller_name': package_name,
   }
@@ -139,6 +140,18 @@ def populate_logic(package_name, source_directory, logic_script):
     source_directory,
     package_name + '_logic.pyx',
     cmakelists_config)
+  
+def populate_logic_impl(package_name, script_directory):
+  # os.popen('cp ' + logic_script + ' ' + source_directory + os.sep + package_name +'_logic_impl.py') 
+  impl_config = {
+    'pytroller_name': package_name,
+  }
+  _create_template_file(
+    'script',
+    'pytroller_logic_impl.py.em',
+    script_directory,
+    package_name + '_logic_impl.py',
+    impl_config)
 
 def populate_cpp_library(package_name, source_directory, include_directory):
   class_name = package_name.replace('_', ' ').title()
@@ -210,14 +223,15 @@ def populate_test(package_name, source_directory):
     test_param_config)
 
   
-def create_pytroller(pytroller_name, destination_directory, logic_script):
+def create_pytroller(pytroller_name, destination_directory):
   create_package_environment(pytroller_name, destination_directory)
   populate_ament_cmake(pytroller_name, destination_directory+'/'+pytroller_name)
   populate_cpp_library(pytroller_name, 
                        destination_directory+'/'+pytroller_name+"/src",
                        destination_directory+'/'+pytroller_name+"/include/"+pytroller_name)
   populate_logic(pytroller_name,
-                 destination_directory+'/'+pytroller_name+"/src",
-                 logic_script)
+                 destination_directory+'/'+pytroller_name+"/src")
+  populate_logic_impl(pytroller_name,
+                      destination_directory+'/'+pytroller_name+"/script")
   populate_test(pytroller_name,
                 destination_directory+'/'+pytroller_name+"/test")

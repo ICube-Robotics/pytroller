@@ -3,7 +3,14 @@ Python controller generator for `ros2_control`
 
 ## Usage
 
-Create a python script containing the definition of the `pytroller_logic_impl` function that takes as input 
+Generate the controller package using :
+```shell
+$ ros2 pytroller create my_pytroller --destination-directory controllers
+```
+
+The raw Python controller logic script `my_pytroller_logic_impl.py` to be implemented is located the `script` directory inside the newly created controller package an is called.
+
+This Python script containing the definition of the `pytroller_logic_impl` function that takes as input 
 - `state` : type `dict` {`joint/interface`, value} : current joint states on all available interfaces
 - `commands` : type `dict` {`joint/interface`, value} : commands to be assigned to joint command interfaces
 - `msg` : type `list` : bytearray of the serialized command message    
@@ -11,6 +18,8 @@ Create a python script containing the definition of the `pytroller_logic_impl` f
 For example :
 
 ```python
+# example_logic.py
+
 from rclpy.serialization import deserialize_message
 from std_msgs.msg import Float64MultiArray
 from math import cos, sin
@@ -25,6 +34,4 @@ def pytroller_logic_impl(states, commands, msg):
   return commands
 ```
 
-```shell
-$ ros2 pytroller create test_logic.py --pytroller-name my_pytroller --destination-directory controllers
-```
+
