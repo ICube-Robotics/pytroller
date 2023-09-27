@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from ros2cli.node.direct import add_arguments
 from ros2cli.verb import VerbExtension
 
@@ -23,7 +25,7 @@ class CreateVerb(VerbExtension):
 
   def add_arguments(self, parser, cli_name):
     parser.add_argument(
-      'pytroller-logic',
+      'pytroller_logic',
       help='Pytroller logic .py file')
     parser.add_argument(
       '--pytroller-name',
@@ -38,5 +40,5 @@ class CreateVerb(VerbExtension):
     create_pytroller(
       args.pytroller_name,
       args.destination_directory,
-      args.logic_script
+      args.pytroller_logic
     )
