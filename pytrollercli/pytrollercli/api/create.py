@@ -231,6 +231,28 @@ def populate_test(package_name, source_directory):
     source_directory,
     'test_params.yaml',
     test_param_config)
+  
+  test_header_config = {
+    'pytroller_name': package_name,
+    'pytroller_class': class_name
+  }
+  _create_template_file(
+    'test',
+    'test_pytroller.hpp.em',
+    source_directory,
+    'test_' + package_name + '.hpp',
+    test_header_config)
+  
+  test_lib_config = {
+    'pytroller_name': package_name,
+    'pytroller_class': class_name
+  }
+  _create_template_file(
+    'test',
+    'test_pytroller.cpp.em',
+    source_directory,
+    'test_' + package_name + '.cpp',
+    test_lib_config)
 
   
 def create_pytroller(pytroller_name, destination_directory):

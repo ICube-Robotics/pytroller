@@ -24,6 +24,9 @@ endforeach()
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 
+file (REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.cpp)
+file (REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.h)
+
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.h
   COMMAND cython -3 -+ ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.pyx
@@ -67,6 +70,7 @@ if(BUILD_TESTING)
 
   ament_lint_auto_find_test_dependencies()
 
+  # Load test
   add_rostest_with_parameters_gmock(
     test_load_@(pytroller_name)
     test/test_load_@(pytroller_name).cpp
@@ -81,12 +85,21 @@ if(BUILD_TESTING)
     ros2_control_test_assets
   )
 
-#   ament_add_gmock(test_@(pytroller_name)
-#     test/test_@(pytroller_name).cpp
-#   )
-#   target_link_libraries(test_@(pytroller_name)
-#     @(pytroller_name)
-#   )
+  # Controller test
+  add_rostest_with_parameters_gmock(
+    test_@(pytroller_name)
+    test/test_@(pytroller_name).cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/test_params.yaml
+  )
+
+  target_link_libraries(test_@(pytroller_name)
+    @(pytroller_name)
+  )
+
+  ament_target_dependencies(test_load_@(pytroller_name)
+    controller_manager
+    hardware_interface
+  )
 
 endif()
 
