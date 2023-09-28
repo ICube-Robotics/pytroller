@@ -130,6 +130,16 @@ def populate_ament_cmake(package_name, package_directory):
 
   
 def populate_logic(package_name, source_directory):
+
+  param_config = {
+    'pytroller_name': package_name,
+  }
+  _create_template_file(
+    'src',
+    'pytroller_parameters.pxd.em',
+    source_directory,
+    package_name + '_parameters.pxd',
+    param_config)
   
   cmakelists_config = {
     'pytroller_name': package_name,

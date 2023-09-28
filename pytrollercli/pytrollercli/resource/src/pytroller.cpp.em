@@ -162,7 +162,7 @@ controller_interface::return_type @(pytroller_class)::update(
   std::vector<int> message((*msg)->get_rcl_serialized_message().buffer,
     (*msg)->get_rcl_serialized_message().buffer +  (*msg)->size());
 
-  if (@(pytroller_name)_logic(states_, commands_, message)) {
+  if (@(pytroller_name)_logic(states_, commands_, message, params_)) {
     RCLCPP_ERROR_THROTTLE(
       get_node()->get_logger(), *(get_node()->get_clock()), 1000,
       "@(pytroller_name) logic failed.");
