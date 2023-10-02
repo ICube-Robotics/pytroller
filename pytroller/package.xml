@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>pytroller</name>
+  <version>0.0.1</version>
+  <description>Meta-package aggregating the pytroller packages and documentation</description>
+  <maintainer email="mcbed.robotics@gmail.com">Maciej Bednarczyk</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>pytrollercli</depend>
+  <depend>pytroller_tools</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
