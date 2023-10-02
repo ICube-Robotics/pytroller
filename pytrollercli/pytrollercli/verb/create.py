@@ -14,27 +14,26 @@
 
 import os
 
-from ros2cli.node.direct import add_arguments
 from ros2cli.verb import VerbExtension
 
 from pytrollercli.api.create import create_pytroller
 
 
 class CreateVerb(VerbExtension):
-  """Create a new pytroller for ros2_control."""
+    """Create a new pytroller for ros2_control."""
 
-  def add_arguments(self, parser, cli_name):
-    parser.add_argument(
-      'pytroller_name',
-      default='pytroller',
-      help='The pytroller name')
-    parser.add_argument(
-      '--destination-directory',
-      default=os.curdir,
-      help='Directory where to create the package directory')
-    
-  def main(self, *, args):
-    create_pytroller(
-      args.pytroller_name,
-      args.destination_directory,
-    )
+    def add_arguments(self, parser, cli_name):
+        parser.add_argument(
+            'pytroller_name',
+            default='pytroller',
+            help='The pytroller name')
+        parser.add_argument(
+            '--destination-directory',
+            default=os.curdir,
+            help='Directory where to create the package directory')
+
+    def main(self, *, args):
+        create_pytroller(
+            args.pytroller_name,
+            args.destination_directory,
+        )

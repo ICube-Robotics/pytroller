@@ -50,7 +50,7 @@ Pytroller command interface.""",
         ],
         "pytrollercli.verb": [
             "create = pytrollercli.verb.create:CreateVerb",
-            
+
         ],
     },
     package_data={
