@@ -16,8 +16,9 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_lifecycle</depend>
   <depend>realtime_tools</depend>
-  <depend>std_msgs</depend>
-  <depend>cython</depend>
+
+  <build_depend>cython</build_depend>
+  <build_depend>pytroller_tools</build_depend>
 
   <test_depend>ament_cmake_gmock</test_depend>
   <test_depend>controller_manager</test_depend>

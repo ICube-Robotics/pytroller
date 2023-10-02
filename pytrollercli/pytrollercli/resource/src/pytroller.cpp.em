@@ -144,24 +144,28 @@ controller_interface::return_type @(pytroller_class)::update(
   auto msg = rt_command_ptr_.readFromRT();
 
   // no command received yet
-  if (!msg || !(*msg))
-  {
+  if (!msg || !(*msg)) {
     return controller_interface::return_type::OK;
   }
 
-  for (auto index = 0ul; index < command_interfaces_.size(); ++index)
-  {
+  // fill commands and states maps to be passed to python
+  for (auto index = 0ul; index < command_interfaces_.size(); ++index) {
     commands_[command_interfaces_[index].get_name()] = std::numeric_limits<double>::quiet_NaN();
   }
-
-  for (auto index = 0ul; index < state_interfaces_.size(); ++index)
-  {
+  for (auto index = 0ul; index < state_interfaces_.size(); ++index) {
     states_[state_interfaces_[index].get_name()] = state_interfaces_[index].get_value();
   }
 
+  // update parameters if changed
+  if (param_listener_->is_old(params_)) {
+    params_ = param_listener_->get_params();
+  }
+
+  // fill message buffer to be passed to python
   std::vector<int> message((*msg)->get_rcl_serialized_message().buffer,
     (*msg)->get_rcl_serialized_message().buffer +  (*msg)->size());
 
+  // run cython function
   if (@(pytroller_name)_logic(states_, commands_, message, params_)) {
     RCLCPP_ERROR_THROTTLE(
       get_node()->get_logger(), *(get_node()->get_clock()), 1000,
@@ -169,8 +173,8 @@ controller_interface::return_type @(pytroller_class)::update(
     return controller_interface::return_type::ERROR;
   }
 
-  for (auto index = 0ul; index < command_interfaces_.size(); ++index)
-  {
+  // retrieve commands from python and fill command interfaces
+  for (auto index = 0ul; index < command_interfaces_.size(); ++index) {
     command_interfaces_[index].set_value(commands_[command_interfaces_[index].get_name()]);
   }
 

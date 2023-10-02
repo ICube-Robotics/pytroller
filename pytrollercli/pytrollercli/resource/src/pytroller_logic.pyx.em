@@ -21,7 +21,7 @@ cdef public int @(pytroller_name)_logic(unordered_map[string, double] states, un
     messagetype = getattr(importlib.import_module('.'.join(mt[:2])), mt[-1])
     command_message = deserialize_message(bytes(msg), type(messagetype()))
 
-    commands = pytroller_logic_impl(states, commands, command_message)
+    commands = pytroller_logic_impl(states, commands, command_message, param)
   except Exception as error:
     print("An exception occurred:", error)
     return -1

@@ -13,7 +13,6 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp
   rclcpp_lifecycle
   realtime_tools
-  std_msgs
 )
 
 find_package(ament_cmake REQUIRED)
@@ -40,10 +39,24 @@ generate_parameter_library(
   src/@(pytroller_name)_parameters.yaml
 )
 
+# Set the output parameter header file name
+set(LIB_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/@(pytroller_name)_parameters/include)
+set(PARAM_HEADER_FILE ${LIB_INCLUDE_DIR}/@(pytroller_name)_parameters.hpp)
+
+file (REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_parameters.pxd)
+
+# Generate the pxd for the library
+add_custom_command(
+  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_parameters.pxd
+  COMMAND ros2 run pytroller_tools generate_pxd ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_parameters.pxd ${PARAM_HEADER_FILE}
+  DEPENDS ${PARAM_HEADER_FILE}
+)
+
 add_library(@(pytroller_name) SHARED
   src/@(pytroller_name).cpp
   src/@(pytroller_name)_logic.cpp
   src/@(pytroller_name)_logic.h
+  src/@(pytroller_name)_parameters.pxd
 )
 target_compile_features(@(pytroller_name) PUBLIC cxx_std_17)
 target_include_directories(@(pytroller_name) PUBLIC
