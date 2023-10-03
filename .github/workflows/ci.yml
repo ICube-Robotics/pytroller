@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare
+        run: |
+          mkdir -p ${{github.workspace}}/src
+      - uses: actions/checkout@v2
+        with:
+          path: src/pytroller
+
+      - name: Build
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ros:humble
+          options: -v ${{github.workspace}}/:/ros/
+          run: |
+            cd /ros
+            apt update && apt upgrade
+            sudo apt install python3-pip -y
+            pip3 install cython
+            . /opt/ros/humble/setup.sh
+            rosdep install --ignore-src --from-paths . -y -r
+            colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+            . install/setup.sh
+            ros2 pytroller create my_pytroller
+            rosdep install --ignore-src --from-paths . -y -r
+            colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+      - name: Test
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ros:humble
+          options: -v ${{github.workspace}}/:/ros/
+          run: |
+            cd /ros
+            apt update && apt upgrade
+            sudo apt install python3-pip -y
+            pip3 install cython
+            . /opt/ros/humble/setup.sh
+            rosdep install --ignore-src --from-paths . -y -r
+            colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+            . install/setup.sh
+            ros2 pytroller create my_pytroller
+            rosdep install --ignore-src --from-paths . -y -r
+            colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+            colcon test
+            colcon test-result
