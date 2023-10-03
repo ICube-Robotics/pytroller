@@ -1,5 +1,7 @@
 # pytroller
-Python controller generator for `ros2_control`
+[![Licence](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+Python controller generator for `ros2_control`. 
 
 ## Usage
 
@@ -19,7 +21,7 @@ This Python script containing the definition of the `pytroller_logic_impl` funct
 For example :
 
 ```python
-# example_logic.py
+# my_pytroller/script/my_pytroller_logic_impl.py
 
 from math import cos, sin
 
@@ -30,3 +32,10 @@ def pytroller_logic_impl(states, commands, msg, params):
 
   return commands
 ```
+
+## Contacts ##
+![icube](https://icube.unistra.fr/fileadmin/templates/DUN/icube/images/logo.png)
+
+[ICube Laboratory](https://icube.unistra.fr), [University of Strasbourg](https://www.unistra.fr/), France
+
+__Maciej Bednarczyk:__ [mcbed.robotics@gmail.com](mailto:mcbed.robotics@gmail.com), @github: [mcbed](https://github.com/mcbed)
