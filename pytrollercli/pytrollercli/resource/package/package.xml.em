@@ -17,7 +17,6 @@
   <depend>rclcpp_lifecycle</depend>
   <depend>realtime_tools</depend>
 
-  <build_depend>cython</build_depend>
   <build_depend>pytroller_tools</build_depend>
 
   <test_depend>ament_cmake_gmock</test_depend>
