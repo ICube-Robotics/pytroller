@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2023 ICube Laboratory, University of Strasbourg
+# Copyright 2023 ICube-Robotics
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ def extract_params_struct(content):
                 case 'std::vector<std::string>':
                     return_struct += 'vector[string]'
 
-        return_struct += ' ' + line.strip().split(' = ')[0].split(' ')[1] + '\n'
+            return_struct += ' ' + line.strip().split(' = ')[0].split(' ')[1] + '\n'
         return return_struct
 
     return None
