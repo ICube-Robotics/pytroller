@@ -28,7 +28,7 @@ file (REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.h)
 
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.h
-  COMMAND cython -3 -+ ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.pyx
+  COMMAND cython3 -3 -+ ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.pyx
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
   DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.pyx
