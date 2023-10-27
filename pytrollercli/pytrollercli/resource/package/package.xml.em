@@ -16,6 +16,7 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_lifecycle</depend>
   <depend>realtime_tools</depend>
+  <depend>cython3</depend>
 
   <build_depend>pytroller_tools</build_depend>
 
