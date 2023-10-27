@@ -24,7 +24,9 @@ TEST(TestLoad@(pytroller_class), load_plugin)
 {
   pluginlib::ClassLoader<controller_interface::ControllerInterface> plugin_loader{
     "controller_interface", "controller_interface::ControllerInterface"};
-  ASSERT_NO_THROW(plugin_loader.createSharedInstance("@(pytroller_name)/@(pytroller_class)"));
+  ASSERT_NO_THROW(
+    plugin_loader.createSharedInstance("@(pytroller_name)/@(pytroller_class)")
+  );
 }
 
 TEST(TestLoad@(pytroller_class), load_controller)

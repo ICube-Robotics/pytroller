@@ -23,15 +23,35 @@ endforeach()
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 
-file (REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.cpp)
-file (REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.h)
+# Set the parameter header file name
+set(PARAM_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/@(pytroller_name)_parameters/include)
+set(PARAM_HEADER_FILE ${PARAM_INCLUDE_DIR}/@(pytroller_name)_parameters.hpp)
+
+# Make logic build directory
+set(LOGIC_DIR ${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME}/@(pytroller_name)_logic)
+set(LOGIC_INCLUDE_DIR ${LOGIC_DIR}/include/@(pytroller_name))
+file(MAKE_DIRECTORY ${LOGIC_DIR})
+file(MAKE_DIRECTORY ${LOGIC_INCLUDE_DIR})
+
+file (REMOVE ${LOGIC_DIR}/@(pytroller_name)_logic.cpp)
+file (REMOVE ${LOGIC_DIR}/@(pytroller_name)_logic.h)
+file (REMOVE ${LOGIC_INCLUDE_DIR}/@(pytroller_name)_logic.h)
 
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.h
-  COMMAND cython3 -3 -+ ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.pyx
+  OUTPUT ${LOGIC_DIR}/@(pytroller_name)_logic.cpp ${LOGIC_DIR}/@(pytroller_name)_logic.h
+  COMMAND cython3 -3 --cplus ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.pyx
+    -o ${LOGIC_DIR}/@(pytroller_name)_logic.cpp -I ${PARAM_INCLUDE_DIR}
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
   DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.pyx
+)
+
+# Copy the header file into the include directory
+add_custom_command(
+  OUTPUT ${LOGIC_INCLUDE_DIR}/@(pytroller_name)_logic.h
+  COMMAND ${CMAKE_COMMAND} -E copy
+    ${LOGIC_DIR}/@(pytroller_name)_logic.h ${LOGIC_INCLUDE_DIR}/@(pytroller_name)_logic.h
+  DEPENDS ${LOGIC_DIR}/@(pytroller_name)_logic.h
 )
 
 generate_parameter_library(
@@ -39,28 +59,28 @@ generate_parameter_library(
   src/@(pytroller_name)_parameters.yaml
 )
 
-# Set the output parameter header file name
-set(LIB_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/@(pytroller_name)_parameters/include)
-set(PARAM_HEADER_FILE ${LIB_INCLUDE_DIR}/@(pytroller_name)_parameters.hpp)
-
-file (REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_parameters.pxd)
+file (REMOVE ${PARAM_INCLUDE_DIR}/@(pytroller_name)_parameters.pxd)
 
 # Generate the pxd for the library
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_parameters.pxd
-  COMMAND ros2 run pytroller_tools generate_pxd ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_parameters.pxd ${PARAM_HEADER_FILE}
+  OUTPUT ${PARAM_INCLUDE_DIR}/@(pytroller_name)_parameters.pxd
+  COMMAND ros2 run pytroller_tools generate_pxd ${PARAM_INCLUDE_DIR}/@(pytroller_name)_parameters.pxd ${PARAM_HEADER_FILE}
   DEPENDS ${PARAM_HEADER_FILE}
 )
 
 add_library(@(pytroller_name) SHARED
   src/@(pytroller_name).cpp
-  src/@(pytroller_name)_logic.cpp
-  src/@(pytroller_name)_logic.h
-  src/@(pytroller_name)_parameters.pxd
+  ${LOGIC_DIR}/@(pytroller_name)_logic.cpp
+  ${LOGIC_INCLUDE_DIR}/@(pytroller_name)_logic.h
+  ${PARAM_INCLUDE_DIR}/@(pytroller_name)_parameters.pxd
 )
 target_compile_features(@(pytroller_name) PUBLIC cxx_std_17)
 target_include_directories(@(pytroller_name) PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include/@(pytroller_name)>
+)
+target_include_directories(@(pytroller_name) PUBLIC
+  $<BUILD_INTERFACE:${LOGIC_DIR}/include>
   $<INSTALL_INTERFACE:include/@(pytroller_name)>
 )
 target_link_libraries(@(pytroller_name) PUBLIC
@@ -116,6 +136,10 @@ if(BUILD_TESTING)
 
 endif()
 
+install(
+  DIRECTORY ${LOGIC_DIR}/include
+  DESTINATION include/@(pytroller_name)
+)
 install(
   DIRECTORY include/
   DESTINATION include/@(pytroller_name)

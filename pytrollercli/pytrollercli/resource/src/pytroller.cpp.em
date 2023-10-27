@@ -31,7 +31,7 @@
 #include "rclcpp/qos.hpp"
 
 #include <Python.h>
-#include "@(pytroller_name)_logic.h"
+#include "@(pytroller_name)/@(pytroller_name)_logic.h"
 
 namespace @(pytroller_name)
 {
