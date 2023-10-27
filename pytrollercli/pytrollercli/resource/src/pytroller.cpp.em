@@ -14,6 +14,8 @@
 //
 // author: Maciej Bednarczyk
 
+#include <dlfcn.h>
+
 #include "@(pytroller_name)/@(pytroller_name).hpp"
 
 #include <algorithm>
@@ -38,6 +40,10 @@ namespace @(pytroller_name)
   rt_command_ptr_(nullptr),
   command_subscriber_(nullptr)
 {
+  // Workaround to fixe undeclared symbols in cpython 
+  // https://stackoverflow.com/questions/49784583/numpy-import-fails-on-multiarray-extension-library-when-called-from-embedded-pyt
+  // TODO : remove ASAP
+  dlopen("libpython3.10.so", RTLD_LAZY | RTLD_GLOBAL);
 }
 
 controller_interface::CallbackReturn @(pytroller_class)::on_init()
