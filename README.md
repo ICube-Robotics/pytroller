@@ -34,12 +34,7 @@ def pytroller_logic_impl(states, commands, msg, params):
   return commands
 ```
 
-Before building the generated controller install `cython`
-```shell
-$ pip3 install cython
-```
-
-Then install all dependencies and build the controller using
+Install all dependencies and build the controller using
 ```shell
 $ rosdep install --ignore-src --from-paths . -y -r
 $ colcon build
