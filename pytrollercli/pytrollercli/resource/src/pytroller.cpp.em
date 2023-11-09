@@ -156,7 +156,7 @@ controller_interface::CallbackReturn @(pytroller_class)::on_deactivate(
 }
 
 controller_interface::return_type @(pytroller_class)::update(
-  const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
+  const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
   // update parameters if changed
   if (param_listener_->is_old(params_)) {
@@ -187,7 +187,7 @@ controller_interface::return_type @(pytroller_class)::update(
   }
 
   // run cython function
-  if (@(pytroller_name)_logic(states_, commands_, message, params_)) {
+  if (@(pytroller_name)_logic(period.seconds(), states_, commands_, message, params_)) {
     RCLCPP_ERROR_THROTTLE(
       get_node()->get_logger(), *(get_node()->get_clock()), 1000,
       "@(pytroller_name) logic failed.");

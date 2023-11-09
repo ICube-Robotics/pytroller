@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def pytroller_logic_impl(states, commands, msg, params):
+def pytroller_logic_impl(period, states, commands, msg, params):
 
   return commands
