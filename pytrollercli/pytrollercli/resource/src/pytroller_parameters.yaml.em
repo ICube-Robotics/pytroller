@@ -7,11 +7,10 @@
   command_topic_name: {
     type: string,
     default_value: "",
-    description: "Optionnal. Name of the subscribed command topic"
+    description: "Optional. Name of the subscribed command topic"
   }
   command_topic_type: {
     type: string,
     default_value: "",
-    description: "Optionnal. Type of the subscribed command topic"
+    description: "Optional. Type of the subscribed command topic"
   }
-
