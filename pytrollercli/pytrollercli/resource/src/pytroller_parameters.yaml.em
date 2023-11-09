@@ -11,11 +11,11 @@
   }
   command_topic_name: {
     type: string,
-    default_value: "~/commands",
+    default_value: "",
     description: "Name of the subscribed command topic"
   }
   command_topic_type: {
     type: string,
-    default_value: "std_msgs/msg/Float64MultiArray",
+    default_value: "",
     description: "Type of the subscribed command topic"
   }
