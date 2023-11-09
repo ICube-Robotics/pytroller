@@ -216,12 +216,6 @@ controller_interface::CallbackReturn @(pytroller_class)::read_parameters()
   }
   params_ = param_listener_->get_params();
 
-  if (params_.joints.empty())
-  {
-    RCLCPP_ERROR(get_node()->get_logger(), "'joints' parameter was empty");
-    return controller_interface::CallbackReturn::ERROR;
-  }
-
   if (params_.interface_full_names.empty())
   {
     RCLCPP_ERROR(get_node()->get_logger(), "'interface_full_names' parameter was empty");
