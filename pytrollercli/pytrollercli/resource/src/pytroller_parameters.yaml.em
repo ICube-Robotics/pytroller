@@ -1,21 +1,16 @@
 @(pytroller_name):
-  joints: {
+  interface_full_names: {
     type: string_array,
     default_value: [],
-    description: "Name of the joints to control",
-  }
-  interface_name: {
-    type: string,
-    default_value: "",
-    description: "Name of the interface to command",
+    description: "Name (WARNING, full names, e.g., 'joint_1/effort') of the interface(s) to command",
   }
   command_topic_name: {
     type: string,
-    default_value: "~/commands",
-    description: "Name of the subscribed command topic"
+    default_value: "",
+    description: "Optional. Name of the subscribed command topic"
   }
   command_topic_type: {
     type: string,
-    default_value: "std_msgs/msg/Float64MultiArray",
-    description: "Type of the subscribed command topic"
+    default_value: "",
+    description: "Optional. Type of the subscribed command topic"
   }
