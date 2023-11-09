@@ -44,7 +44,7 @@ add_custom_command(
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
   DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic.pyx
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/@(pytroller_name)_logic_impl.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/script/@(pytroller_name)_logic_impl.py
 )
 
 # Copy the header file into the include directory
