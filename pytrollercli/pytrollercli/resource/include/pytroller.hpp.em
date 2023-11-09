@@ -73,15 +73,11 @@ public:
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
 protected:
-
   void declare_parameters();
   controller_interface::CallbackReturn read_parameters();
 
   std::shared_ptr<ParamListener> param_listener_;
   Params params_;
-
-  std::vector<std::string> joint_names_;
-  std::string interface_name_;
 
   std::vector<std::string> command_interface_types_;
   std::unordered_map<std::string, double> states_;
