@@ -88,9 +88,20 @@ controller_interface::CallbackReturn @(pytroller_class)::on_configure(
     states_.insert({state_interfaces_[index].get_name(), state_interfaces_[index].get_value()});
   }
 
-  command_subscriber_ = get_node()->create_generic_subscription(
-    params_.command_topic_name, params_.command_topic_type, rclcpp::SystemDefaultsQoS(),
-    [this](std::shared_ptr<rclcpp::SerializedMessage> msg) { rt_command_ptr_.writeFromNonRT(msg); });
+  if (params_.command_topic_name.empty() != params_.command_topic_type.empty()) {
+    RCLCPP_FATAL(
+      get_node()->get_logger(),
+      "The parameters 'command_topic_name' and 'command_topic_type' should BOTH be empty OR set!");
+    return controller_interface::CallbackReturn::ERROR;
+  }
+  if (!params_.command_topic_name.empty()) {
+    command_subscriber_ = get_node()->create_generic_subscription(
+      params_.command_topic_name, params_.command_topic_type, rclcpp::SystemDefaultsQoS(),
+      [this](std::shared_ptr<rclcpp::SerializedMessage> msg) { rt_command_ptr_.writeFromNonRT(msg); });
+  }
+  else {
+    command_subscriber_ = nullptr;
+  }
 
   RCLCPP_INFO(get_node()->get_logger(), "configure successful");
   return controller_interface::CallbackReturn::SUCCESS;
@@ -147,11 +158,24 @@ controller_interface::CallbackReturn @(pytroller_class)::on_deactivate(
 controller_interface::return_type @(pytroller_class)::update(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
-  auto msg = rt_command_ptr_.readFromRT();
+  // update parameters if changed
+  if (param_listener_->is_old(params_)) {
+    params_ = param_listener_->get_params();
+  }
 
-  // no command received yet
-  if (!msg || !(*msg)) {
-    return controller_interface::return_type::OK;
+  // Read command msg if needed
+  std::vector<int> message;
+  if (command_subscriber_) {
+    auto msg = rt_command_ptr_.readFromRT();
+    if (!msg || !(*msg)) {
+      // no command received yet
+      return controller_interface::return_type::OK;
+    }
+    // fill message buffer to be passed to python
+    message = std::vector<int>(
+      (*msg)->get_rcl_serialized_message().buffer,
+      (*msg)->get_rcl_serialized_message().buffer +  (*msg)->size()
+    );
   }
 
   // fill commands and states maps to be passed to python
@@ -161,15 +185,6 @@ controller_interface::return_type @(pytroller_class)::update(
   for (auto index = 0ul; index < state_interfaces_.size(); ++index) {
     states_[state_interfaces_[index].get_name()] = state_interfaces_[index].get_value();
   }
-
-  // update parameters if changed
-  if (param_listener_->is_old(params_)) {
-    params_ = param_listener_->get_params();
-  }
-
-  // fill message buffer to be passed to python
-  std::vector<int> message((*msg)->get_rcl_serialized_message().buffer,
-    (*msg)->get_rcl_serialized_message().buffer +  (*msg)->size());
 
   // run cython function
   if (@(pytroller_name)_logic(states_, commands_, message, params_)) {
@@ -207,15 +222,14 @@ controller_interface::CallbackReturn @(pytroller_class)::read_parameters()
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  if (params_.interface_name.empty())
+  if (params_.interface_full_names.empty())
   {
-    RCLCPP_ERROR(get_node()->get_logger(), "'interface_name' parameter was empty");
+    RCLCPP_ERROR(get_node()->get_logger(), "'interface_full_names' parameter was empty");
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  for (const auto & joint : params_.joints)
-  {
-    command_interface_types_.push_back(joint + "/" + params_.interface_name);
+  for (const auto & interface_name : params_.interface_full_names) {
+    command_interface_types_.push_back(interface_name);
   }
 
   return controller_interface::CallbackReturn::SUCCESS;

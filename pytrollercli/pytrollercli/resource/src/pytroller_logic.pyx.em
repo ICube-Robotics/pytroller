@@ -31,10 +31,13 @@ from rclpy.serialization import deserialize_message
 
 cdef public int @(pytroller_name)_logic(unordered_map[string, double] states, unordered_map[string, double] & commands, vector[int] & msg, Params param):
   try:
-    mt = param.command_topic_type.decode("utf-8").split('/')
-    messagetype = getattr(importlib.import_module('.'.join(mt[:2])), mt[-1])
-    command_message = deserialize_message(bytes(msg), type(messagetype()))
-
+    command_message = None
+    # Read command msg if applicable (i.e., there is one...)
+    if (len(msg) > 0):
+      mt = param.command_topic_type.decode("utf-8").split('/')
+      messagetype = getattr(importlib.import_module('.'.join(mt[:2])), mt[-1])
+      command_message = deserialize_message(bytes(msg), type(messagetype()))
+    # Either way, call python logic
     (&commands)[0] = pytroller_logic_impl(states, commands, command_message, param)
   except Exception as error:
     print("An exception occurred:", error)
