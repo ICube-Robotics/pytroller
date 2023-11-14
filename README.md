@@ -26,7 +26,7 @@ For example :
 
 from math import cos, sin
 
-def pytroller_logic_impl(states, commands, msg, params):
+def pytroller_logic_impl(period, states, commands, msg, params):
 
   commands['joint1/effort'.encode('ascii')] = msg.data[0]
   commands['joint2/effort'.encode('ascii')] = msg.data[1]
